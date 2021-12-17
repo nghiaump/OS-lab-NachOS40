@@ -20,6 +20,7 @@
 
 
 FileSystem fs(false);
+SynchConsole gConsole;
 
 void SysHalt()
 {
@@ -236,7 +237,7 @@ void SysPrintString(){
   delete[] sysBuff;    
 }
 
-int SysCreateFile()
+int SysCreateFile() //Prototype: int Create(char *name);
 {
   int addr = kernel->machine->ReadRegister(4); // Get the address of the buffer of user space
   char* sysBuff = User2System(addr, MAX_LENGTH); // copy buffer from user space to kernel space
@@ -248,7 +249,7 @@ int SysCreateFile()
 }
 //=======================================================================================
 
-OpenFileId SysOpen()
+OpenFileId SysOpen() //Prototype: OpenFileId Open(char *name, int type);
 {
   int addr = kernel->machine->ReadRegister(4);
   int type = kernel->machine->ReadRegister(5);
@@ -272,7 +273,7 @@ OpenFileId SysOpen()
   return -1;
 }
 
-int SysClose()
+int SysClose() //Prototype: int Close(OpenFileId id);
 {
   int fileid = kernel->machine->ReadRegister(4);
   if (fileid >= 0 && fileid <= 9)
@@ -285,6 +286,59 @@ int SysClose()
     }
   }
   return -1;
+}
+
+int SysRead()   //Prototype: int Read(char *buffer, int size, OpenFileId id)
+{
+  int virtualAddr = kernel->machine->ReadRegister(4),
+        charcount = kernel->machine->ReadRegister(5);
+  OpenFileId openFileId = kernel->machine->ReadRegister(6);
+  if (openFileId > 9 || openFileId < 0) return -1;     //File id out of table -> error
+  if (!fs.openFiles[openFileId]) return -4;            //Reading an unopened file -> error
+  char* sysBuff = new char[charcount + 1];
+  char ch; int idx = 0, size;
+  switch (openFileId)
+  {
+    case 0:
+          size = gConsole.Read(sysBuff, charcount);
+          System2User(virtualAddr, size, sysBuff);
+          delete[] sysBuff;
+          return size;
+    case 1:
+      return -2;      //Reading stdout -> error
+    default:
+          size = fs.openFiles[openFileId]->Read(sysBuff, charcount);
+          if (size > 0) System2User(virtualAddr, size, sysBuff); else {delete[] sysBuff; return -3;}   //Can't read jack shit/null file -> error
+          delete[] sysBuff;
+          return size;
+  }
+  return -1;    //Dummy return point
+}
+
+int SysWrite()  //Prototype: int Write(char *buffer, int size, OpenFileId id);
+{
+  int virtualAddr = kernel->machine->ReadRegister(4),
+        charcount = kernel->machine->ReadRegister(5);
+  OpenFileId openFileId = kernel->machine->ReadRegister(6);
+  if (openFileId > 9 || openFileId < 0) return -1;//File ID out of the table -> error
+  if (!fs.openFiles[openFileId]) return -4;       //Writing an unopened file -> error
+  if (!fs.type[openFileId] == 1) return -2;       //Writing a read-only file -> error
+  char* sysBuff = User2System(virtualAddr, charcount + 1);
+  char ch; int size;
+  switch (openFileId)
+  {
+    case 1:
+          size = gConsole.Write(sysBuff, charcount);
+          delete[] sysBuff;
+          return size;
+    case 0:
+      return -2;                                  //Writing in stdin -> error
+    default:
+          size = fs.openFiles[openFileId]->Write(sysBuff, charcount);
+          delete[] sysBuff;
+          return size;
+  }
+  return -1;      //Dummy return point
 }
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */

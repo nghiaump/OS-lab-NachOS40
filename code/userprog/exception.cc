@@ -229,6 +229,56 @@ ExceptionHandler(ExceptionType which)
 	ASSERTNOTREACHED();
 	break;
 //========================================================================
+	case SC_ReadFile:
+	DEBUG(dbgSys, "Reading file @ ID = " << kernel->machine->ReadRegister(6));
+	result = SysRead();
+	switch (result)
+	{
+		case -1:
+			DEBUG(dbgSys, "Invalid ID");
+			cerr << "Invalid ID";
+			break;
+		case -2:
+			DEBUG(dbgSys, "Tried to read stdout.")
+			cerr << "Cannot read stdout";
+			break;
+		case -3:
+			DEBUG(dbgSys, "Null file");
+			cerr << "Attempted to read a null file";
+			break;
+		case -4:
+			cerr << "File not opened";
+			break;
+	}
+	kernel->machine->WriteRegister(2, result);
+	ModifyReturnPoint();
+	return;
+	ASSERTNOTREACHED();
+	break;
+//===============================================================
+	case SC_WriteFile:
+	DEBUG(dbgSys, "Writing to file @ ID = " << kernel->machine->ReadRegister(6));
+	result = SysRead();
+	switch (result)
+	{
+		case -1:
+			DEBUG(dbgSys, "Invalid ID");
+			cerr << "Invalid ID";
+			break;
+		case -2:
+			DEBUG(dbgSys, "Tried to write a read-only file.")
+			cerr << "This is a read-only file";
+			break;
+		case -4:
+			cerr << "File not opened";
+			break;
+	}
+	kernel->machine->WriteRegister(2, result);
+	ModifyReturnPoint();
+	return;
+	ASSERTNOTREACHED();
+	break;
+//========================================================================
     default:
 	cerr << "Unexpected system call " << type << "\n";
 	break;

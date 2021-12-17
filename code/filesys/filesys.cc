@@ -89,6 +89,7 @@ FileSystem::FileSystem(bool format)
 
     this->Create("stdin", 0);
     this->Create("stdout", 0);
+    type[1] = 1;
 
     openFiles[idx++] = Open("stdin");
     openFiles[idx++] = Open("stdout");
