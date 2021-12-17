@@ -106,6 +106,38 @@ CreateFile:
 	j 	$31
 	.end CreateFile
 
+	.globl Read
+	.ent	Read
+Read:
+	addiu $2,$0,SC_ReadFile
+	syscall
+	j 	$31
+	.end Read
+
+	.globl Write
+	.ent	Write
+Write:
+	addiu $2,$0,SC_WriteFile
+	syscall
+	j 	$31
+	.end Write
+
+	.globl Open
+	.ent	Open
+Open:
+	addiu $2,$0,SC_OpenFile
+	syscall
+	j 	$31
+	.end Open
+
+	.globl Close
+	.ent	Close
+Close:
+	addiu $2,$0,SC_CloseFile
+	syscall
+	j 	$31
+	.end Close
+
 	.globl Exit
 	.ent	Exit
 Exit:
