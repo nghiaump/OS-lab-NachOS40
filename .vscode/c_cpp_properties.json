@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${default}",
+                "code/machine",
+                "code/lib",
+                "code/test",
+                "code/threads",
+                "code/userprog",
+                "${workspaceFolder}/code/filesys"
+            ],
+            "compilerPath": "/usr/bin/gcc-4.8",
+            "cStandard": "c89",
+            "cppStandard": "gnu++98",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
