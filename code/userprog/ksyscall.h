@@ -16,11 +16,11 @@
 #include "synchconsole.h"
 #include "filesys.h"
 #include <time.h>
-#include "synchcons.h"
+//#include "synchcons.h"
 
 
-FileSystem fs(false);
-SynchConsole gConsole;
+FileSystem fs;
+//SynchConsole gConsole;
 
 void SysHalt()
 {
@@ -244,7 +244,7 @@ int SysCreateFile() //Prototype: int Create(char *name);
   if (strlen(sysBuff) == 0) return -1;
   if (!sysBuff) return -1;
   
-  bool code = fs.Create(sysBuff, 0);  //Create file
+  bool code = fs.Create(sysBuff);  //Create file
   return code? 0 : -1;          //Return status code
 }
 //=======================================================================================
@@ -300,10 +300,10 @@ int SysRead()   //Prototype: int Read(char *buffer, int size, OpenFileId id)
   switch (openFileId)
   {
     case 0:
-          size = gConsole.Read(sysBuff, charcount);
-          System2User(virtualAddr, size, sysBuff);
-          delete[] sysBuff;
-          return size;
+          // size = gConsole.Read(sysBuff, charcount);
+          // System2User(virtualAddr, size, sysBuff);
+          // delete[] sysBuff;
+          // return size;
     case 1:
       return -2;      //Reading stdout -> error
     default:
@@ -328,9 +328,6 @@ int SysWrite()  //Prototype: int Write(char *buffer, int size, OpenFileId id);
   switch (openFileId)
   {
     case 1:
-          size = gConsole.Write(sysBuff, charcount);
-          delete[] sysBuff;
-          return size;
     case 0:
       return -2;                                  //Writing in stdin -> error
     default:

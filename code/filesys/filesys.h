@@ -36,14 +36,30 @@
 #include "copyright.h"
 #include "sysdep.h"
 #include "openfile.h"
+#define FILESYS_STUB
 
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
 				// calls to UNIX, until the real file system
 				// implementation is available
 class FileSystem {
   public:
-    FileSystem() {}
+    FileSystem() {
+		for (int i = 0; i < 10; i++)
+		{
+			openFiles[i] = NULL;
+			type[i] = 0;
+		}
+    	idx = 0;
+		this->Create("stdin");
+		this->Create("stdout");
+		type[1] = 1;
 
+		openFiles[idx++] = Open("stdin");
+		openFiles[idx++] = Open("stdout");
+	}
+	OpenFile* openFiles[10];
+	int type[10];
+	int idx;
     bool Create(char *name) {
 	int fileDescriptor = OpenForWrite(name);
 
@@ -65,10 +81,7 @@ class FileSystem {
 
 #else // FILESYS
 class FileSystem {
-  public:
-	OpenFile* openFiles[10];
-	int type[10];
-	int idx;
+ 
     FileSystem(bool format);		// Initialize the file system.
 					// Must be called *after* "synchDisk" 
 					// has been initialized.

@@ -42,6 +42,7 @@
 // Copyright (c) 1992-1993 The Regents of the University of California.
 // All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
+#define FILESYS_STUB
 #ifndef FILESYS_STUB
 
 #include "copyright.h"
@@ -80,19 +81,6 @@
 
 FileSystem::FileSystem(bool format)
 { 
-    for (int i = 0; i < 10; i++)
-    {
-        openFiles[i] = NULL;
-        type[i] = 0;
-    }
-    idx = 0;
-
-    this->Create("stdin", 0);
-    this->Create("stdout", 0);
-    type[1] = 1;
-
-    openFiles[idx++] = Open("stdin");
-    openFiles[idx++] = Open("stdout");
 
     DEBUG(dbgFile, "Initializing the file system.");
     if (format) {
