@@ -16,6 +16,7 @@ int
 main()
 {
     char buffer[256];
+    PrintString("File name: ");
     ReadString(buffer, 255);
     CreateFile(buffer);
     Halt();
