@@ -237,7 +237,7 @@ void SysPrintString(){
   delete[] sysBuff;    
 }
 
-int SysCreateFile() //Prototype: int Create(char *name);
+int SysCreateFile() //Prototype: int CreateFile(char *name);
 {
   int addr = kernel->machine->ReadRegister(4); // Get the address of the buffer of user space
   char* sysBuff = User2System(addr, MAX_LENGTH); // copy buffer from user space to kernel space

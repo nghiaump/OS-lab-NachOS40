@@ -55,6 +55,9 @@
 #ifndef IN_ASM
 
 
+#define SConsoleInput	0  
+#define SConsoleOutput	1 
+
 /* The system call interface.  These are the operations the Nachos
  * kernel needs to support, to be able to run user programs.
  *
