@@ -300,10 +300,20 @@ int SysRead()   //Prototype: int Read(char *buffer, int size, OpenFileId id)
   switch (openFileId)
   {
     case 0:
-          // size = gConsole.Read(sysBuff, charcount);
-          // System2User(virtualAddr, size, sysBuff);
-          // delete[] sysBuff;
-          // return size;
+        int idx = 0;
+	while (idx < charcount) {
+		char ch = kernel->synchConsoleIn->GetChar();
+		if (ch == '\n' || ch == 0){
+			sysBuff[idx] = '\0';
+			break;
+		}
+		sysBuff[idx] = ch;
+		idx++;
+	}
+  	sysBuff[idx] = '\0'; // The string is created.
+	System2User(addr, length, sysBuff); // Copy content from kernel buffer to user buffer
+	delete[] sysBuff;
+	return idx;
     case 1:
       return -2;      //Reading stdout -> error
     default:
@@ -328,6 +338,18 @@ int SysWrite()  //Prototype: int Write(char *buffer, int size, OpenFileId id);
   switch (openFileId)
   {
     case 1:
+	int i = 0;
+  	while(i < MAX_LENGTH){
+	    char c = sysBuff[i];
+	    if(c != '\0') 
+	      kernel->synchConsoleOut->PutChar(c);
+	    else 
+	      break;
+	    ++i;
+	  }
+  	// deallocate memory
+  	delete[] sysBuff;    
+	return i;
     case 0:
       return -2;                                  //Writing in stdin -> error
     default:
