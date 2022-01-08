@@ -265,6 +265,19 @@ Interrupt::Schedule(CallBackObj *toCall, int fromNow, IntType type)
     pending->Insert(toOccur);
 }
 
+void
+Interrupt::Schedule(IntFunctionPtr handler, int arg, int fromNow, IntType type)
+{
+    int when = kernel->stats->totalTicks + fromNow;
+    PendingInterrupt *toOccur = new PendingInterrupt(handler, arg, when, type);
+
+    //DEBUG('i', "Scheduling interrupt handler the %s at time = %d\n", 
+	//				intTypeNames[type], when);
+    ASSERT(fromNow > 0);
+
+    pending->SortedInsert(toOccur, when);
+}
+
 //----------------------------------------------------------------------
 // Interrupt::CheckIfDue
 // 	Check if any interrupts are scheduled to occur, and if so, 
@@ -348,4 +361,13 @@ Interrupt::DumpState()
     cout << "Pending interrupts:\n";
     pending->Apply(PrintPending);
     cout << "\nEnd of pending interrupts\n";
+}
+
+PendingInterrupt::PendingInterrupt(IntFunctionPtr func, int param, int time, 
+				IntType kind)
+{
+    handler = func;
+    arg = param;
+    when = time;
+    type = kind;
 }

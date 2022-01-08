@@ -112,7 +112,7 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring createfile PrintString help ascii sort
+PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring createfile help ascii sort main sinhvien voinuoc nghia lananh nghiala
 
 endif
 
@@ -177,11 +177,11 @@ readchar: readchar.o start.o
 	$(COFF2NOFF) readchar.coff readchar
 	
 
-PrintString.o: PrintString.c
-	$(CC) $(CFLAGS) -c PrintString.c
-PrintString: PrintString.o start.o
-	$(LD) $(LDFLAGS) start.o PrintString.o -o PrintString.coff
-	$(COFF2NOFF) PrintString.coff PrintString
+printstring.o: printstring.c
+	$(CC) $(CFLAGS) -c printstring.c
+printstring: printstring.o start.o
+	$(LD) $(LDFLAGS) start.o printstring.o -o printstring.coff
+	$(COFF2NOFF) printstring.coff printstring
 
 printchar.o: printchar.c
 	$(CC) $(CFLAGS) -c printchar.c
@@ -212,6 +212,43 @@ help.o: help.c
 help: help.o start.o
 	$(LD) $(LDFLAGS) start.o help.o -o help.coff
 	$(COFF2NOFF) help.coff help
+
+main.o: main.c
+	$(CC) $(CFLAGS) -c main.c
+main: main.o start.o
+	$(LD) $(LDFLAGS) start.o main.o -o main.coff
+	$(COFF2NOFF) main.coff main
+
+sinhvien.o: sinhvien.c
+	$(CC) $(CFLAGS) -c sinhvien.c
+sinhvien: sinhvien.o start.o
+	$(LD) $(LDFLAGS) start.o sinhvien.o -o sinhvien.coff
+	$(COFF2NOFF) sinhvien.coff sinhvien
+
+voinuoc.o: voinuoc.c
+	$(CC) $(CFLAGS) -c voinuoc.c
+voinuoc: voinuoc.o start.o
+	$(LD) $(LDFLAGS) start.o voinuoc.o -o voinuoc.coff
+	$(COFF2NOFF) voinuoc.coff voinuoc
+
+nghia.o: nghia.c
+	$(CC) $(CFLAGS) -c nghia.c
+nghia: nghia.o start.o
+	$(LD) $(LDFLAGS) start.o nghia.o -o nghia.coff
+	$(COFF2NOFF) nghia.coff nghia
+
+lananh.o: lananh.c
+	$(CC) $(CFLAGS) -c lananh.c
+lananh: lananh.o start.o
+	$(LD) $(LDFLAGS) start.o lananh.o -o lananh.coff
+	$(COFF2NOFF) lananh.coff lananh
+
+nghiala.o: nghiala.c
+	$(CC) $(CFLAGS) -c nghiala.c
+nghiala: nghiala.o start.o
+	$(LD) $(LDFLAGS) start.o nghiala.o -o nghiala.coff
+	$(COFF2NOFF) nghiala.coff nghiala
+
 
 
 

@@ -381,3 +381,40 @@ SortedList<T>::SelfTest(T *p, int numEntries)
 
      delete q;
 }
+
+//19120447
+template <class T>
+void
+List<T>::SortedInsert(T item, int sortKey)
+{
+    ListElement<T> *element = new ListElement<T>(item, sortKey);
+    ListElement<T> *ptr;		// keep track
+
+    if (IsEmpty()) {	// if list is empty, put
+        first = element;
+        last = element;
+    } else if (sortKey < first->key) {	
+		// item goes on front of list
+	element->next = first;
+	first = element;
+    } else {		// look for first elt in list bigger than item
+        for (ptr = first; ptr->next != NULL; ptr = ptr->next) {
+            if (sortKey < ptr->next->key) {
+		element->next = ptr->next;
+	        ptr->next = element;
+		return;
+	    }
+	}
+	last->next = element;		// item goes at end of list
+	last = element;
+    }
+
+}
+
+template <class T>
+ListElement<T>::ListElement(T itm, int sortKey)
+{
+     item = itm;
+     key = sortKey;
+     next = NULL;	// assume we'll put it at the end of the list 
+}

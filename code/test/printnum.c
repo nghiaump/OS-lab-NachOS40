@@ -15,7 +15,7 @@
 int
 main()
 {
-    PrintNum(1645);
+    PrintNum(-1645);
     Halt();
     /* not reached */
 }

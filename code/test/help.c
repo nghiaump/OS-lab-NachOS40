@@ -7,6 +7,7 @@
 int
 main()
 {
+  /*
   PrintString("*************************************************************************************\n");
   PrintString("I/Thanh vien:\n");
   PrintString("1. Do Nguyen Duy Hoang\t19120077\n");
@@ -15,5 +16,8 @@ main()
   PrintString("II/Chuong trinh sort:\nSap xep n so nguyen (n <= 100) theo thu tu tang dan hoac giam dan\n\n");
   PrintString("III/Chuong trinh ascii:\nIn ra cac ky tu in duoc cua bang ma ASCII\n");
   PrintString("*************************************************************************************\n");
+  */
+  int waifu = Exec("../test/PrintString");
+  Join(waifu);
   Halt();
 }

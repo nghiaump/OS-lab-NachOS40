@@ -80,7 +80,6 @@ class Thread {
     // THEY MUST be in this position for SWITCH to work.
     int *stackTop;			 // the current stack pointer
     void *machineState[MachineStateSize];  // all registers except for stackTop
-
   public:
     Thread(char* debugName);		// initialize a Thread 
     ~Thread(); 				// deallocate a Thread
@@ -89,8 +88,9 @@ class Thread {
 					// is called
 
     // basic thread operations
-
-    void Fork(VoidFunctionPtr func, void *arg); 
+    int processID;
+    void Fork(VoidFunctionPtr func, void* arg); 
+    void Fork(IntFunctionPtr func, int arg); 
     				// Make thread run (*func)(arg)
     void Yield();  		// Relinquish the CPU if any 
 				// other thread is runnable
@@ -114,7 +114,8 @@ class Thread {
     ThreadStatus status;	// ready, running or blocked
     char* name;
 
-    void StackAllocate(VoidFunctionPtr func, void *arg);
+    void StackAllocate(IntFunctionPtr func, int arg);
+    void StackAllocate(VoidFunctionPtr func, void* arg);
     				// Allocate a stack for thread.
 				// Used internally by Fork()
 

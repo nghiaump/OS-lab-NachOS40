@@ -17,6 +17,8 @@ main()
 {
     char buffer[MaxStringLength];
     ReadString(buffer, MaxStringLength - 1);
+    PrintString("String vua nhap la:\n");
+    PrintString(buffer);
     Halt();
     /* not reached */
 }

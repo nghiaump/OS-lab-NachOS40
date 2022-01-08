@@ -27,9 +27,13 @@
 template <class T>
 class ListElement {
   public:
+    T item; 	
+    int key;		    	// priority, for a sorted list   	     	// item on the list
+
     ListElement(T itm); 	// initialize a list element
     ListElement *next;	     	// next element on list, NULL if this is last
-    T item; 	   	     	// item on the list
+    ListElement(T itm, int sortKey);	// initialize a list element
+     
 };
 
 // The following class defines a "list" -- a singly linked list of
@@ -69,6 +73,7 @@ class List {
 				// has this list been corrupted?
     void SelfTest(T *p, int numEntries);
 				// verify module is working
+    void SortedInsert(T item, int sortKey);
 
   protected:
     ListElement<T> *first;  	// Head of the list, NULL if list is empty

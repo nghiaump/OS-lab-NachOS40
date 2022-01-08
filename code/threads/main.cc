@@ -46,10 +46,26 @@
 #include "openfile.h"
 #include "sysdep.h"
 
+
 // global variables
 Kernel *kernel;
 Debug *debug;
-
+/*
+FileSystem  *fileSystem;
+Machine* machine;	// user program memory and registers
+//extern SynchConsole* gSynchConsole; // Bo sung them bien gSynchConsole
+// -----------------------Cac bien ho tro da chuong---------------------------
+Semaphore *addrLock;	// semaphore trong synch.h
+Bitmap *gPhysPageBitMap;	// quan ly cac frame vat ly tren ram
+Bitmap *pageTable; // Quan ly cac trang
+int *parentIdTable; // Quan ly cac tien trinh cha
+char** fileNameTable; // Quan ly ten cac tien trinh
+Thread *currentThread;
+Interrupt *interrupt;
+Statistics *stats;
+PTable *pTab;
+STable *sTab;
+*/
 
 //----------------------------------------------------------------------
 // Cleanup

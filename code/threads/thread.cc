@@ -21,6 +21,7 @@
 #include "switch.h"
 #include "synch.h"
 #include "sysdep.h"
+#include "main.h"
 
 // this is put at the top of the execution stack, for detecting stack overflows
 const int STACK_FENCEPOST = 0xdedbeef;
@@ -61,9 +62,14 @@ Thread::Thread(char* threadName)
 
 Thread::~Thread()
 {
+    /*
     DEBUG(dbgThread, "Deleting thread: " << name);
-
+    printf("this = ");
+    printf(this->getName());
+    printf("currentThread = ");
+    printf(kernel->currentThread->getName());
     ASSERT(this != kernel->currentThread);
+    */
     if (stack != NULL)
 	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
 }
@@ -89,7 +95,7 @@ Thread::~Thread()
 //----------------------------------------------------------------------
 
 void 
-Thread::Fork(VoidFunctionPtr func, void *arg)
+Thread::Fork(VoidFunctionPtr func, void* arg)
 {
     Interrupt *interrupt = kernel->interrupt;
     Scheduler *scheduler = kernel->scheduler;
@@ -104,7 +110,21 @@ Thread::Fork(VoidFunctionPtr func, void *arg)
 					// are disabled!
     (void) interrupt->SetLevel(oldLevel);
 }    
+void 
+Thread::Fork(IntFunctionPtr func, int arg)
+{
+    Interrupt *interrupt = kernel->interrupt;
+    Scheduler *scheduler = kernel->scheduler;
+    IntStatus oldLevel;
+    
+    DEBUG(dbgThread, "Forking thread: " << name << " f(a): " << (int) func << " " << arg);
+    StackAllocate(func, arg);
 
+    oldLevel = interrupt->SetLevel(IntOff);
+    scheduler->ReadyToRun(this);	// ReadyToRun assumes that interrupts 
+					// are disabled!
+    (void) interrupt->SetLevel(oldLevel);
+}    
 //----------------------------------------------------------------------
 // Thread::CheckOverflow
 // 	Check a thread's stack to see if it has overrun the space
@@ -303,7 +323,7 @@ PLabelToAddr(void *plabel)
 //----------------------------------------------------------------------
 
 void
-Thread::StackAllocate (VoidFunctionPtr func, void *arg)
+Thread::StackAllocate (VoidFunctionPtr func, void* arg)
 {
     stack = (int *) AllocBoundedArray(StackSize * sizeof(int));
 
@@ -360,7 +380,64 @@ Thread::StackAllocate (VoidFunctionPtr func, void *arg)
     machineState[WhenDonePCState] = (void*)ThreadFinish;
 #endif
 }
+void
+Thread::StackAllocate (IntFunctionPtr func, int arg)
+{
+    stack = (int *) AllocBoundedArray(StackSize * sizeof(int));
 
+#ifdef PARISC
+    // HP stack works from low addresses to high addresses
+    // everyone else works the other way: from high addresses to low addresses
+    stackTop = stack + 16;	// HP requires 64-byte frame marker
+    stack[StackSize - 1] = STACK_FENCEPOST;
+#endif
+
+#ifdef SPARC
+    stackTop = stack + StackSize - 96; 	// SPARC stack must contains at 
+					// least 1 activation record 
+					// to start with.
+    *stack = STACK_FENCEPOST;
+#endif 
+
+#ifdef PowerPC // RS6000
+    stackTop = stack + StackSize - 16; 	// RS6000 requires 64-byte frame marker
+    *stack = STACK_FENCEPOST;
+#endif 
+
+#ifdef DECMIPS
+    stackTop = stack + StackSize - 4;	// -4 to be on the safe side!
+    *stack = STACK_FENCEPOST;
+#endif
+
+#ifdef ALPHA
+    stackTop = stack + StackSize - 8;	// -8 to be on the safe side!
+    *stack = STACK_FENCEPOST;
+#endif
+
+
+#ifdef x86
+    // the x86 passes the return address on the stack.  In order for SWITCH() 
+    // to go to ThreadRoot when we switch to this thread, the return addres 
+    // used in SWITCH() must be the starting address of ThreadRoot.
+    stackTop = stack + StackSize - 4;	// -4 to be on the safe side!
+    *(--stackTop) = (int) ThreadRoot;
+    *stack = STACK_FENCEPOST;
+#endif
+    
+#ifdef PARISC
+    machineState[PCState] = PLabelToAddr(ThreadRoot);
+    machineState[StartupPCState] = PLabelToAddr(ThreadBegin);
+    machineState[InitialPCState] = PLabelToAddr(func);
+    machineState[InitialArgState] = arg;
+    machineState[WhenDonePCState] = PLabelToAddr(ThreadFinish);
+#else
+    machineState[PCState] = (void*)ThreadRoot;
+    machineState[StartupPCState] = (void*)ThreadBegin;
+    machineState[InitialPCState] = (void*)func;
+    machineState[InitialArgState] = (void*)arg;
+    machineState[WhenDonePCState] = (void*)ThreadFinish;
+#endif
+}
 #include "machine.h"
 
 //----------------------------------------------------------------------

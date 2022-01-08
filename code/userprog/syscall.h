@@ -51,6 +51,10 @@
 #define SC_ReadFile 53
 #define SC_WriteFile 54
 
+#define SC_CreateSemaphore 55
+#define SC_Wait 56
+#define SC_Signal 57
+
 #define MaxStringLength 256
 #ifndef IN_ASM
 
@@ -112,6 +116,7 @@ typedef int ThreadId;
 /* This can be implemented as a call to ExecV.
  */ 
 SpaceId Exec(char* exec_name);
+// Lang ANh da code dong nay ~.~
 
 /* Run the executable, stored in the Nachos file "argv[0]", with
  * parameters stored in argv[1..argc-1] and return the 
@@ -213,6 +218,12 @@ int ThreadJoin(ThreadId id);
 void ThreadExit(int ExitCode);	
 
 // MYCODE
+
+int CreateSemaphore(char* name, int semval);
+
+int Wait(char* name);
+
+int Signal(char* name);
 
 
 

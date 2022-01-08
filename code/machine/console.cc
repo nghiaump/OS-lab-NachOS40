@@ -25,6 +25,7 @@
 //		from the keyboard
 //----------------------------------------------------------------------
 
+
 ConsoleInput::ConsoleInput(char *readFile, CallBackObj *toCall)
 {
     if (readFile == NULL)
@@ -171,3 +172,138 @@ ConsoleOutput::PutChar(char ch)
     putBusy = TRUE;
     kernel->interrupt->Schedule(this, ConsoleTime, ConsoleWriteInt);
 }
+
+//================19120447==============================================================
+
+// Dummy functions because C++ is weird about pointers to member functions
+static void ConsoleReadPoll(int c) 
+{ Console *console = (Console *)c; console->CheckCharAvail(); }
+static void ConsoleWriteDone(int c)
+{ Console *console = (Console *)c; console->WriteDone(); }
+
+//----------------------------------------------------------------------
+// Console::Console
+// 	Initialize the simulation of a hardware console device.
+//
+//	"readFile" -- UNIX file simulating the keyboard (NULL -> use stdin)
+//	"writeFile" -- UNIX file simulating the display (NULL -> use stdout)
+// 	"readAvail" is the interrupt handler called when a character arrives
+//		from the keyboard
+// 	"writeDone" is the interrupt handler called when a character has
+//		been output, so that it is ok to request the next char be
+//		output
+//----------------------------------------------------------------------
+
+Console::Console(char *readFile, char *writeFile, IntFunctionPtr readAvail, 
+		IntFunctionPtr writeDone, int callArg)
+{
+    if (readFile == NULL)
+	readFileNo = 0;					// keyboard = stdin
+    else
+    	readFileNo = OpenForReadWrite(readFile, TRUE);	// should be read-only
+    if (writeFile == NULL)
+	writeFileNo = 1;				// display = stdout
+    else
+    	writeFileNo = OpenForWrite(writeFile);
+
+    // set up the stuff to emulate asynchronous interrupts
+    writeHandler = writeDone;
+    readHandler = readAvail;
+    handlerArg = callArg;
+    putBusy = FALSE;
+    incoming = EOF;
+
+    // start polling for incoming packets
+    kernel->interrupt->Schedule(ConsoleReadPoll, (int)this, ConsoleTime, ConsoleReadInt);
+}
+
+//----------------------------------------------------------------------
+// Console::~Console
+// 	Clean up console emulation
+//----------------------------------------------------------------------
+
+Console::~Console()
+{
+    if (readFileNo != 0)
+	Close(readFileNo);
+    if (writeFileNo != 1)
+	Close(writeFileNo);
+}
+
+//----------------------------------------------------------------------
+// Console::CheckCharAvail()
+// 	Periodically called to check if a character is available for
+//	input from the simulated keyboard (eg, has it been typed?).
+//
+//	Only read it in if there is buffer space for it (if the previous
+//	character has been grabbed out of the buffer by the Nachos kernel).
+//	Invoke the "read" interrupt handler, once the character has been 
+//	put into the buffer. 
+//----------------------------------------------------------------------
+
+void
+Console::CheckCharAvail()
+{
+    char c;
+
+    // schedule the next time to poll for a packet
+    kernel->interrupt->Schedule(ConsoleReadPoll, (int)this, ConsoleTime, 
+			ConsoleReadInt);
+
+    // do nothing if character is already buffered, or none to be read
+    if ((incoming != EOF) || !PollFile(readFileNo))
+	return;	  
+
+    // otherwise, read character and tell user about it
+    Read(readFileNo, &c, sizeof(char));
+    incoming = c ;
+    kernel->stats->numConsoleCharsRead++;
+    (*readHandler)(handlerArg);	
+}
+
+//----------------------------------------------------------------------
+// Console::WriteDone()
+// 	Internal routine called when it is time to invoke the interrupt
+//	handler to tell the Nachos kernel that the output character has
+//	completed.
+//----------------------------------------------------------------------
+
+void
+Console::WriteDone()
+{
+    putBusy = FALSE;
+    kernel->stats->numConsoleCharsWritten++;
+    (*writeHandler)(handlerArg);
+}
+
+//----------------------------------------------------------------------
+// Console::GetChar()
+// 	Read a character from the input buffer, if there is any there.
+//	Either return the character, or EOF if none buffered.
+//----------------------------------------------------------------------
+
+char
+Console::GetChar()
+{
+   char ch = incoming;
+
+   incoming = EOF;
+   return ch;
+}
+
+//----------------------------------------------------------------------
+// Console::PutChar()
+// 	Write a character to the simulated display, schedule an interrupt 
+//	to occur in the future, and return.
+//----------------------------------------------------------------------
+
+void
+Console::PutChar(char ch)
+{
+    ASSERT(putBusy == FALSE);
+    WriteFile(writeFileNo, &ch, sizeof(char));
+    putBusy = TRUE;
+    kernel->interrupt->Schedule(ConsoleWriteDone, (int)this, ConsoleTime,
+					ConsoleWriteInt);
+}
+

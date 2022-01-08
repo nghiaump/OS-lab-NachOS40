@@ -21,6 +21,7 @@
 class AddrSpace {
   public:
     AddrSpace();			// Create an address space.
+    AddrSpace(char* filename);
     ~AddrSpace();			// De-allocate an address space
 
     bool Load(char *fileName);		// Load a program into addr space from
@@ -39,14 +40,14 @@ class AddrSpace {
     // is 0 for Read, 1 for Write.
     ExceptionType Translate(unsigned int vaddr, unsigned int *paddr, int mode);
 
+    void InitRegisters();		// Initialize user-level CPU registers,
+					// before jumping to user code
+
   private:
     TranslationEntry *pageTable;	// Assume linear page table translation
 					// for now!
     unsigned int numPages;		// Number of pages in the virtual 
-					// address space
-
-    void InitRegisters();		// Initialize user-level CPU registers,
-					// before jumping to user code
+					// address space    
 
 };
 

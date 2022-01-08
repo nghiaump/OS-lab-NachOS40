@@ -8,7 +8,9 @@
 int
 main()
 {
+  
   int i;
+  Wait("exexe");
   // Printable character from 0 to 127
   PrintString("Printing printable ASCII characters\n");
   for(i = 32; i < 128; ++i){
@@ -20,6 +22,6 @@ main()
 
   // Print the newline character
   PrintChar('\n');
-  Halt();
+  Exit(0);
   /* not reached */
 }

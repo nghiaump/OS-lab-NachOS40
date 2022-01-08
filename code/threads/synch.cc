@@ -79,8 +79,9 @@ Semaphore::P()
     Thread *currentThread = kernel->currentThread;
     
     // disable interrupts
+    //DEBUG(dbgSys, "old");
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	
-    
+    //DEBUG(dbgSys, value);
     while (value == 0) { 		// semaphore not available
 	queue->Append(currentThread);	// so go to sleep
 	currentThread->Sleep(FALSE);
@@ -201,6 +202,9 @@ void Lock::Release()
     lockHolder = NULL;
     semaphore->V();
 }
+
+bool Lock::IsHeldByCurrentThread(){ 
+    		return lockHolder == kernel->currentThread; }
 
 //----------------------------------------------------------------------
 // Condition::Condition
