@@ -7,6 +7,8 @@ void main()
 	int f_Success; // Bien co dung de kiem tra thanh cong
 	SpaceId si_sinhvien, si_voinuoc;	// Bien id cho file
 	char c_readFile;	// Bien ki tu luu ki tu doc tu file
+	int flag_VN;		// Bien co de nhay den tien trinh voinuoc
+	int flag_MAIN;		// Bien co de nhay den tien trinh main
 	int lengthFile;		// Luu do dai file
 	int i_File;		// Luu con tro file
 	//-----------------------------------------------------------
@@ -16,7 +18,7 @@ void main()
 	while(1)
 	{
 		lengthFile = 0;
-		PrintString("Next Wait sinh vien\n");
+		PrintString("sinhvien is waiting\n");
 		Wait("sinhvien");
 		PrintString("Someone signaled sinhvien\n");
 
@@ -28,7 +30,7 @@ void main()
 			Signal("main"); // tro ve tien trinh chinh
 			return;
 		}
-		PrintString("Created result.txt successfully\n");
+		//PrintString("Created result.txt successfully\n");
 
 		// Mo file sinhvien.txt len de doc
 		PrintString("Open sinhvien.txt in sinhvien process\n");
@@ -38,7 +40,9 @@ void main()
 			Signal("main"); // tro ve tien trinh chinh
 			return;
 		}
-		PrintString("Open sinhvien.txt in sinhvien successfully\n");
+		PrintString("Open sinhvien.txt successfully at address: ");
+		PrintNum(si_sinhvien);
+		PrintString(" (sinhvien)\n");
 		
 		PrintString("Seeking\n");
 		lengthFile = Seek(-1, si_sinhvien);
@@ -56,7 +60,7 @@ void main()
 			Signal("main"); // tro ve tien trinh chinh
 			return;
 		}
-		PrintString("Created voinuoc.txt successfully\n");
+		//PrintString("Created voinuoc.txt successfully\n");
 		
 
 		// Mo file voinuoc.txt de ghi tung dung tich nuoc cua sinhvien
@@ -152,5 +156,6 @@ void main()
 		
 		Signal("main");	
 	}
+	Exit(0);
 	
 }

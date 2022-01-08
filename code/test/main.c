@@ -36,7 +36,7 @@ int main()
 	f_Success = CreateFile("output.txt");
 	if(f_Success == -1)
 		return 1;
-	PrintString("Output file created!\n");
+	//PrintString("Output file created!\n");
 	
 	
 	// Mo file input.txt chi de doc
@@ -44,7 +44,9 @@ int main()
 	si_input = Open("input.txt", 1);
 	if(si_input == -1)
 		return 1;
-	PrintString("Open input.txt successfully\n");
+	PrintString("Open input.txt successfully at address: ");
+	PrintNum(si_input);
+	PrintString(" (main)\n");
 	
 	// Mo file output.txt de doc va ghi
 	si_output = Open("output.txt", 0);
@@ -53,7 +55,9 @@ int main()
 		Close(si_input);
 		return 1;
 	}
-	PrintString("Open output.txt successfully\n");
+	PrintString("Open output.txt successfully at address: ");
+	PrintNum(si_output);
+	PrintString(" (main)\n");
 
 	// Doc so luong thoi diem xet o file input.txt
 	//**** Thuc hien xong doan lenh duoi thi con tro file o input.txt o dong 1
@@ -83,7 +87,7 @@ int main()
 	flagSV = Exec("../test/sinhvien");
 	//Signal("sinhvien");
 	//Join(f_Success);	
-	if(f_Success == -1)
+	if(flagSV == -1)
 	{
 		Close(si_input);
 		Close(si_output);
@@ -96,7 +100,7 @@ int main()
 	flagVN = Exec("../test/voinuoc");
 	// Join(flagVN);
 
-	if(f_Success == -1)
+	if(flagVN == -1)
 	{
 		Close(si_input);
 		Close(si_output);
@@ -105,6 +109,7 @@ int main()
 	PrintString("Executed voinuoc\n");
 
 	// Thuc hien xu ly khi nao het thoi diem xet thi thoi
+	//==========================================================================================================
 	while(SLTD--)
 	{
 		PrintString("\n\n[][][][][][][][][][]  C U R R E N T   T U R N:  [][][][][][][][][][]\n");
@@ -117,7 +122,7 @@ int main()
 			Close(si_output);
 			return 1;
 		}
-		PrintString("Created sinhvien.txt successfully!\n");
+		//PrintString("Created sinhvien.txt successfully!\n");
 		
 		// Mo file sinhvien.txt de ghi tung dong sinhvien tu file input.txt
 		PrintString("Opening sinhvien.txt\n");
@@ -128,7 +133,9 @@ int main()
 			Close(si_output);
 			return 1;
 		}
-		PrintString("Opened sinhvien.txt successfully (main)\n");
+		PrintString("Opened sinhvien.txt successfully (main) at address: ");
+		PrintNum(si_sinhvien);
+		PrintString(" (main)\n");
 		while(1)
 		{
 			if(Read(&c_readFile, 1, si_input) < 1)
@@ -166,7 +173,6 @@ int main()
 
 
 
-
 		PrintString("sinhvien waken up main\n");
 		// Thuc hien doc file tu result va ghi vao ket qua o output.txt
 		si_result = Open("result.txt", 1);
@@ -176,7 +182,7 @@ int main()
 			Close(si_output);
 			return 1;
 		}
-		PrintString("main is reading output of the line\n");
+		PrintString("main is reading result of the line\n");
 
 		
 
@@ -197,7 +203,7 @@ int main()
 		if(SLTD >= 0)
 			PrintString("Write output.txt done (main)\n");
 
-		PrintString("Remaining turn(s): ");
+		PrintString("\nRemaining turn(s): ");
 		PrintNum(SLTD);
 		PrintString("\n");	
 		

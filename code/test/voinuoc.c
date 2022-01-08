@@ -31,7 +31,9 @@ void main()
 			Signal("sinhvien");
 			return;
 		}
-		PrintString("Opened result.txt in voinuoc successfully\n");
+		PrintString("Opened result.txt successfully at address: ");
+		PrintNum(si_result);
+		PrintString(" (voinuoc)\n");
 
 		while(1)
 		{
@@ -117,12 +119,12 @@ void main()
 			Signal("sinhvien");
 			//Wait("voinuoc");
 		}
-		Close(si_result);
-		Signal("m_vn"); //7735
 
 		PrintString("\nNow here (still in while loop)\n");
+		//Close(si_result);
+		Signal("m_vn"); //7735
 		Signal("sinhvien");
-		//Exit(0);
 
-	}			
+	}
+	Exit(0);		
 }
