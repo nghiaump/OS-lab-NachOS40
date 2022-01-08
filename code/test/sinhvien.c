@@ -7,8 +7,6 @@ void main()
 	int f_Success; // Bien co dung de kiem tra thanh cong
 	SpaceId si_sinhvien, si_voinuoc;	// Bien id cho file
 	char c_readFile;	// Bien ki tu luu ki tu doc tu file
-	int flag_VN;		// Bien co de nhay den tien trinh voinuoc
-	int flag_MAIN;		// Bien co de nhay den tien trinh main
 	int lengthFile;		// Luu do dai file
 	int i_File;		// Luu con tro file
 	//-----------------------------------------------------------
@@ -62,20 +60,22 @@ void main()
 		
 
 		// Mo file voinuoc.txt de ghi tung dung tich nuoc cua sinhvien
+		Wait("m_vn"); //7735
 		PrintString("Opening voinuoc.txt\n");
 		si_voinuoc = Open("voinuoc.txt", 0);
 		if(si_voinuoc == -1)
 		{
+			PrintNum(si_voinuoc);
+			PrintString(" ==> xxxxxxxxxxxxxxxxxFAILED to open voinuoc.txtxxxxxxxxxxxxxxxxxxx\n");
 			Close(si_sinhvien);
 			Signal("main"); // tro ve tien trinh chinh
 			return;
 		}
-		
-		PrintString("Opened voinuoc.txt successfully\n");
-		PrintNum(i_File);
-		PrintChar('-');
-		PrintNum(lengthFile);
-		PrintChar('\n');
+
+
+		PrintString("Opened voinuoc.txt successfully at address: ");
+		PrintNum(si_voinuoc);
+
 		// Ghi dung tich vao file voinuoc.txt tu file sinhvien.txt
 		while(i_File < lengthFile)
 		{
@@ -83,6 +83,7 @@ void main()
 			Read(&c_readFile, 1, si_sinhvien);
 			PrintString("Current char: ");
 			PrintChar(c_readFile);
+			PrintString(" (sinhvien)\n");
 			if(c_readFile != ' ')
 			{
 				Write(&c_readFile, 1, si_voinuoc);
@@ -106,13 +107,19 @@ void main()
 			{
 				Close(si_voinuoc);
 				PrintString("Closed voinuoc.txt successfully\n");
+
+
+				PrintString("sinhvien signals voinuoc\n");
+				Signal("m_vn"); //7735
 				Signal("voinuoc");
 				
 				
 				// Dung chuong trinh sinhvien lai de voinuoc thuc thi
 				Wait("sinhvien");
+				PrintString("sinhvien has been waken up by voinuoc\n");
 				
 				// Tao file voinuoc.txt
+				Wait("m_vn"); //7735
 				f_Success = CreateFile("voinuoc.txt");
 				if(f_Success == -1)
 				{
@@ -130,16 +137,20 @@ void main()
 					Signal("main"); // tro ve tien trinh chinh
 					return;
 				}
+				Signal("m_vn"); //7735
 				
 				
 			}
 			
-			i_File++;			
-							
-		}	
+			i_File++;							
+		}
+		Close(si_voinuoc);
+		Close(si_sinhvien);
+		PrintString("Now in sinhvien and done 1 line. Then call main to get the next line\n");	
 				
-		// Ket thuc tien trinh sinhvien va voinuoc quay lai ham SvVn
-		Signal("main");			
+		// Ket thuc tien trinh sinhvien va voinuoc quay lai ham main
+		
+		Signal("main");	
 	}
-	// Quay lai ham Svvn	
+	
 }

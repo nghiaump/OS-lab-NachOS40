@@ -20,6 +20,7 @@ void main()
 	
 	while(1)
 	{
+		PrintString("Waiting m_vn in the head (voinuoc)\n");
 		Wait("m_vn");
 
 		// Mo file result.txt de ghi voi nao su dung
@@ -62,7 +63,7 @@ void main()
 				}
 				PrintString("Current char: ");
 				PrintChar(c_readFile);
-				PrintString("\r\n");
+				PrintString("\n");
 
 				if(c_readFile != '*')
 				{
@@ -72,7 +73,7 @@ void main()
 
 				else
 				{
-					PrintString("Finished reading voinuoc.txt\n");
+					PrintString("Finished reading the line\n");
 					flag_done_result = 1;				
 					Close(si_voinuoc);
 					break;			
@@ -81,40 +82,47 @@ void main()
 			}
 			
 			
-			PrintString("\r\n=========> v = ");
+			PrintString("\r\nv = ");
 			PrintNum(v);
 			PrintChar('\n');
 			if(v!= 0)
 			{
-				PrintString("Decide which plumber to be used: ");
+				PrintString("Decide which faucet to be used: ");
 				// Dung voi 1
 				if(v1 <= v2)
 				{
 					v1 += v;
 					Write("1", 1, si_result);
-					PrintString("Plumber 1\n");
+					PrintString("============>Faucet 1");
 				}
 				else	// Dung voi 2
 				{					
 					v2 += v;
 					Write("2", 1, si_result);
-					PrintString("Plumber 2\n");
+					PrintString("============>Faucet 2");
 					
 				}
 			}
 			
 			if(flag_done_result == 1)
 			{
+				PrintString(" ==> Flag end of line triggered!\n");
 				v1 = v2 = 0;
 				Close(si_result);				
-				Signal("sinhvien");
+				//Signal("sinhvien");
 				break;				
 			}	
 			
-			PrintString("\n\nvoinuoc signals sinhvien to get the next volume\n");
+			PrintString("\nvoinuoc signals sinhvien to get the next volume\n");
 			Signal("sinhvien");
 			//Wait("voinuoc");
 		}
+		Close(si_result);
+		Signal("m_vn"); //7735
+
+		PrintString("\nNow here (still in while loop)\n");
+		Signal("sinhvien");
+		//Exit(0);
 
 	}			
 }

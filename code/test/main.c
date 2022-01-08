@@ -26,21 +26,18 @@ int main()
 	f_Success = CreateSemaphore("voinuoc", 0);
 	if(f_Success == -1)
 		return 1;
-	f_Success = CreateSemaphore("m_vn", 0);
-	if(f_Success == -1)
-		return 1;
-	f_Success = CreateSemaphore("LA", 1);
+	f_Success = CreateSemaphore("m_vn", 1);
 	if(f_Success == -1)
 		return 1;
 	
-	/*
+	
 	// Tao file output.txt de ghi ket qua cuoi cung	
 	PrintString("Creating output file\n");
 	f_Success = CreateFile("output.txt");
 	if(f_Success == -1)
 		return 1;
 	PrintString("Output file created!\n");
-	*/
+	
 	
 	// Mo file input.txt chi de doc
 	//PrintString("Opening the input file\n");
@@ -110,6 +107,7 @@ int main()
 	// Thuc hien xu ly khi nao het thoi diem xet thi thoi
 	while(SLTD--)
 	{
+		PrintString("\n\n[][][][][][][][][][]  C U R R E N T   T U R N:  [][][][][][][][][][]\n");
 		// Tao file sinhvien.txt
 		PrintString("creating sinhvien.txt\n");
 		f_Success = CreateFile("sinhvien.txt");
@@ -130,7 +128,7 @@ int main()
 			Close(si_output);
 			return 1;
 		}
-		PrintString("Opened sinhvien.txt successfully\n");
+		PrintString("Opened sinhvien.txt successfully (main)\n");
 		while(1)
 		{
 			if(Read(&c_readFile, 1, si_input) < 1)
@@ -158,13 +156,18 @@ int main()
 			
 		// Goi tien trinh sinhvien hoat dong
 		Signal("sinhvien");
-		Join(flagSV);
-		Join(flagVN);
+		//Join(flagSV); Join vo la sai luon
+		//Join(flagVN); Join vo la sai luon
 		
 
 		// Tien trinh chinh phai cho 
-		Wait("main");	
-		PrintString("Main waiting finished\n");
+		PrintString("main is waiting sinhvien and voinuoc\n");
+		Wait("main");
+
+
+
+
+		PrintString("sinhvien waken up main\n");
 		// Thuc hien doc file tu result va ghi vao ket qua o output.txt
 		si_result = Open("result.txt", 1);
 		if(si_result == -1)
@@ -173,29 +176,34 @@ int main()
 			Close(si_output);
 			return 1;
 		}
+		PrintString("main is reading output of the line\n");
 
-		PrintString("\n Lan thu: ");
-		PrintNum(SLTD);
-		PrintString("\n");	
+		
 
-		// Doc cac voi vao output.txt		
+		// Doc cac voi vao output.txt
+		PrintString("Writing result.txt into output.txt (main)\n");		
 		while(1)
 		{
 			if(Read(&c_readFile, 1, si_result)  < 1)
 			{
-				Write("\r\n", 2, si_output);
+				Write("\n", 1, si_output);
 				Close(si_result);
 				Signal("m_vn");
 				break;
 			}
 			Write(&c_readFile, 1, si_output);
-			Write(" ", 1, si_output);
-			
+			Write(" ", 1, si_output);			
 		}
+		if(SLTD >= 0)
+			PrintString("Write output.txt done (main)\n");
+
+		PrintString("Remaining turn(s): ");
+		PrintNum(SLTD);
+		PrintString("\n");	
 		
 	}
 	
-	
+	PrintString("Finished! Now close input.txt and output.txt\n");
 	Close(si_input);
 	Close(si_output);
 
