@@ -12,7 +12,6 @@ int main()
 	int SLTD;	// Luu so luong thoi diem xet
 	char c_readFile;	// Bien ki tu luu ki tu doc tu file
 	int tryToWrite;
-	//int flag;
 
 	//-----------------------------------------------------------
 
@@ -76,7 +75,7 @@ int main()
 		else
 			break;
 	}
-	PrintString("End loop\n");
+	PrintString("Finished reading input.txt\n");
 	PrintString("SLTD = ");
 	PrintNum(SLTD);
 	PrintChar('\n');
@@ -98,7 +97,7 @@ int main()
 
 	// Goi thuc thi tien trinh voinuoc.c
 	flagVN = Exec("../test/voinuoc");
-	//Join(flagVN);
+	// Join(flagVN);
 
 	if(f_Success == -1)
 	{
@@ -165,7 +164,7 @@ int main()
 
 		// Tien trinh chinh phai cho 
 		Wait("main");	
-		
+		PrintString("Main waiting finished\n");
 		// Thuc hien doc file tu result va ghi vao ket qua o output.txt
 		si_result = Open("result.txt", 1);
 		if(si_result == -1)

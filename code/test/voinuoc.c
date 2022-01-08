@@ -40,10 +40,10 @@ void main()
 			si_voinuoc = Open("voinuoc.txt", 1);
 			if(si_voinuoc == -1)
 			{
-				//?
+				PrintString("Finished 1 line of sinhvien\n");
+				PrintString("Return to main\n");
 				Close(si_result);
-				Signal("sinhvien");
-			
+				Signal("sinhvien");			
 				return;
 			}
 			PrintString("Address of si_voinuoc = ");
@@ -54,22 +54,25 @@ void main()
 			
 			while(1)
 			{			
-				if(Read(&c_readFile, 1, si_voinuoc)  == -3 || ((c_readFile < '0' || c_readFile >9) && c_readFile != '*'))
+				if(Read(&c_readFile, 1, si_voinuoc)  == -3)
 				{	
+					PrintString("Read char return code -3\n");
 					Close(si_voinuoc);			
 					break;
 				}
 				PrintString("Current char: ");
 				PrintChar(c_readFile);
-				PrintChar('\n');
+				PrintString("\r\n");
 
 				if(c_readFile != '*')
 				{
+					PrintString("Read char continuously\n");
 					v = v* 10 + (c_readFile - 48);
 				}
 
 				else
 				{
+					PrintString("Finished reading voinuoc.txt\n");
 					flag_done_result = 1;				
 					Close(si_voinuoc);
 					break;			
@@ -78,19 +81,24 @@ void main()
 			}
 			
 			
-			
+			PrintString("\r\n=========> v = ");
+			PrintNum(v);
+			PrintChar('\n');
 			if(v!= 0)
 			{
+				PrintString("Decide which plumber to be used: ");
 				// Dung voi 1
 				if(v1 <= v2)
 				{
 					v1 += v;
 					Write("1", 1, si_result);
+					PrintString("Plumber 1\n");
 				}
 				else	// Dung voi 2
 				{					
 					v2 += v;
 					Write("2", 1, si_result);
+					PrintString("Plumber 2\n");
 					
 				}
 			}
@@ -103,9 +111,9 @@ void main()
 				break;				
 			}	
 			
-			PrintString("\nvoinuoc signals sinhvien to get the next volume\n");
+			PrintString("\n\nvoinuoc signals sinhvien to get the next volume\n");
 			Signal("sinhvien");
-			Wait("voinuoc");
+			//Wait("voinuoc");
 		}
 
 	}			
