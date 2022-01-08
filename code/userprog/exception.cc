@@ -266,7 +266,7 @@ void ExceptionHandler(ExceptionType which)
 				break;
 			case -3:
 				DEBUG(dbgSys, "Null file");
-				cerr << "Attempted to read a null file";
+				cerr << "Attempted to read a null file or reached EOF";
 				break;
 			case -4:
 				cerr << "File not opened";

@@ -21,7 +21,7 @@ void main()
 		for(j = 0; j < COUNT_TO_WAIT; ++j); // Vong lap mo phong thoi gian lay 1 lit nuoc		
 		
 		PrintChar(cID);
-		PrintChar('\n');		
+		PrintChar(' ');		
 
 		si_output = Open("output.txt", 0);	// Mo file output.txt ghi so thu tu cua sinh vien hien tai
 

@@ -112,7 +112,7 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring createfile help ascii sort main sinhvien voinuoc
+PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring createfile help ascii sort main sinhvien
 
 endif
 
@@ -224,14 +224,6 @@ sinhvien.o: sinhvien.c
 sinhvien: sinhvien.o start.o
 	$(LD) $(LDFLAGS) start.o sinhvien.o -o sinhvien.coff
 	$(COFF2NOFF) sinhvien.coff sinhvien
-
-voinuoc.o: voinuoc.c
-	$(CC) $(CFLAGS) -c voinuoc.c
-voinuoc: voinuoc.o start.o
-	$(LD) $(LDFLAGS) start.o voinuoc.o -o voinuoc.coff
-	$(COFF2NOFF) voinuoc.coff voinuoc
-
-
 
 
 clean:
