@@ -345,7 +345,6 @@ int SysRead() // Prototype: int Read(char *buffer, int size, OpenFileId id)
   switch (openFileId)
   {
   case 0: //Read stdin
-    int idx = 0;
     while (idx < charcount)
     {
       char ch = kernel->synchConsoleIn->GetChar();
@@ -392,10 +391,11 @@ int SysWrite() // Prototype: int Write(char *buffer, int size, OpenFileId id);
   char *sysBuff = User2System(virtualAddr, charcount + 1);
   char ch;
   int size;
+  int i;
   switch (openFileId)
   {
   case 1: //Write stdout
-    int i = 0;
+    i = 0;
     while (i < MAX_LENGTH)
     {
       char c = sysBuff[i];
