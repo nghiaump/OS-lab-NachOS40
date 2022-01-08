@@ -3,217 +3,75 @@
 
 #define MAX_LENGTH 32
 
-
 int main()
 {
 	// KHAI BAO
-	int f_Success, flagSV, flagVN; // Bien co dung de kiem tra thanh cong
-	SpaceId si_input, si_output, si_sinhvien, si_result;	// Bien id cho file
-	int SLTD;	// Luu so luong thoi diem xet
-	char c_readFile;	// Bien ki tu luu ki tu doc tu file
-	int tryToWrite;
-
+	int flag_mutex, i, SLSV, readCode;
+	int process[10];
+	SpaceId si_input, si_output;
+	char c_readFile;
+	
 	//-----------------------------------------------------------
 
+	flag_mutex = CreateSemaphore("voinuoc", 0);
+	if (flag_mutex == -1)
+		return 1;
 
-	// Khoi tao 4 Semaphore de quan ly 3 tien trinh
-	f_Success = CreateSemaphore("main",0);
-	if(f_Success == -1)
-		return 1;
-	f_Success = CreateSemaphore("sinhvien", 0);
-	if(f_Success == -1)
-		return 1;
-	f_Success = CreateSemaphore("voinuoc", 0);
-	if(f_Success == -1)
-		return 1;
-	f_Success = CreateSemaphore("m_vn", 1);
-	if(f_Success == -1)
-		return 1;
-	
-	
-	// Tao file output.txt de ghi ket qua cuoi cung	
-	PrintString("Creating output file\n");
-	f_Success = CreateFile("output.txt");
-	if(f_Success == -1)
-		return 1;
-	//PrintString("Output file created!\n");
-	
-	
-	// Mo file input.txt chi de doc
-	//PrintString("Opening the input file\n");
+	// Mo file input.txt chi de doc so luong sinh vien
+	PrintString("Opening the input file\n");
 	si_input = Open("input.txt", 1);
-	if(si_input == -1)
+	if (si_input == -1)
 		return 1;
-	PrintString("Open input.txt successfully at address: ");
-	PrintNum(si_input);
-	PrintString(" (main)\n");
-	
-	// Mo file output.txt de doc va ghi
-	si_output = Open("output.txt", 0);
-	if(si_output == -1)
-	{
-		Close(si_input);
-		return 1;
-	}
-	PrintString("Open output.txt successfully at address: ");
-	PrintNum(si_output);
-	PrintString(" (main)\n");
+	PrintString("Opened successfully!\n");
 
-	// Doc so luong thoi diem xet o file input.txt
-	//**** Thuc hien xong doan lenh duoi thi con tro file o input.txt o dong 1
-	SLTD = 0;
-	//PrintNum(si_input);
-	
-	//PrintString("Begin loop\n");
-	while(1)
+	// Tao file output.txt de ghi ket qua
+	PrintString("Creating output file\n");
+	flag_mutex = CreateFile("output.txt");
+	if (flag_mutex == -1)
+		return 1;
+	PrintString("Output file created!\n");
+
+	// Doc cac ky tu trong input.txt va chuyen thanh so
+	SLSV = 0; // Khoi tao gia tri so luong sinh vien
+	while (1)
 	{
-		Read(&c_readFile, 1, si_input);
-		if(c_readFile != '\n')
-		{
-			if(c_readFile >= '0' && c_readFile <= '9')
-				SLTD = SLTD * 10 + (c_readFile - 48);
-		}
-		else
+		readCode = Read(&c_readFile, 1, si_input);
+
+		// Doc toi cuoi file thi thoat
+		if (readCode == -3)
 			break;
+		// Chuyen char sang int
+		if (c_readFile >= '0' && c_readFile <= '9')
+			SLSV = SLSV * 10 + (c_readFile - 48);
 	}
-	PrintString("Finished reading input.txt\n");
-	PrintString("SLTD = ");
-	PrintNum(SLTD);
+
+	PrintString("\nSLSV = ");
+	PrintNum(SLSV);
 	PrintChar('\n');
-	
 
-
-	// Goi thuc thi tien trinh sinhvien.c
-	flagSV = Exec("../test/sinhvien");
-	//Signal("sinhvien");
-	//Join(f_Success);	
-	if(flagSV == -1)
+	// Exec() cac tien trinh tuong ung so luong sinh vien
+	for (i = 0; i < SLSV; ++i)
 	{
-		Close(si_input);
-		Close(si_output);
-		return 1;
-	}
-	PrintString("Executed sinhvien\n");
-
-
-	// Goi thuc thi tien trinh voinuoc.c
-	flagVN = Exec("../test/voinuoc");
-	// Join(flagVN);
-
-	if(flagVN == -1)
-	{
-		Close(si_input);
-		Close(si_output);
-		return 1;
-	}
-	PrintString("Executed voinuoc\n");
-
-	// Thuc hien xu ly khi nao het thoi diem xet thi thoi
-	//==========================================================================================================
-	while(SLTD--)
-	{
-		PrintString("\n\n[][][][][][][][][][]  C U R R E N T   T U R N:  [][][][][][][][][][]\n");
-		// Tao file sinhvien.txt
-		PrintString("creating sinhvien.txt\n");
-		f_Success = CreateFile("sinhvien.txt");
-		if(f_Success == -1)
+		process[i] = Exec("../test/sinhvien");
+		if (process[i] == -1)
 		{
 			Close(si_input);
 			Close(si_output);
 			return 1;
 		}
-		//PrintString("Created sinhvien.txt successfully!\n");
-		
-		// Mo file sinhvien.txt de ghi tung dong sinhvien tu file input.txt
-		PrintString("Opening sinhvien.txt\n");
-		si_sinhvien = Open("sinhvien.txt", 0);
-		if(si_sinhvien == -1)
-		{
-			Close(si_input);
-			Close(si_output);
-			return 1;
-		}
-		PrintString("Opened sinhvien.txt successfully (main) at address: ");
-		PrintNum(si_sinhvien);
-		PrintString(" (main)\n");
-		while(1)
-		{
-			if(Read(&c_readFile, 1, si_input) < 1)
-			{
-				// Doc toi cuoi file
-				break;
-			}
-			if(c_readFile != '\n')
-			{				
-				tryToWrite = Write(&c_readFile, 1, si_sinhvien);	
-				PrintString("Current char: ");
-				PrintChar(c_readFile);
-				//PrintNum(tryToWrite); -3
-				if(tryToWrite > 0)
-					PrintString(" write OK\n");
-				else
-					PrintString(" but cannot be writen\n");	
-			}
-			else
-				break;
-						
-		}
-		// Dong file sinhvien.txt lai
-		Close(si_sinhvien);
-			
-		// Goi tien trinh sinhvien hoat dong
-		Signal("sinhvien");
-		//Join(flagSV); Join vo la sai luon
-		//Join(flagVN); Join vo la sai luon
-		
-
-		// Tien trinh chinh phai cho 
-		PrintString("main is waiting sinhvien and voinuoc\n");
-		Wait("main");
-
-
-
-		PrintString("sinhvien waken up main\n");
-		// Thuc hien doc file tu result va ghi vao ket qua o output.txt
-		si_result = Open("result.txt", 1);
-		if(si_result == -1)
-		{
-			Close(si_input);
-			Close(si_output);
-			return 1;
-		}
-		PrintString("main is reading result of the line\n");
-
-		
-
-		// Doc cac voi vao output.txt
-		PrintString("Writing result.txt into output.txt (main)\n");		
-		while(1)
-		{
-			if(Read(&c_readFile, 1, si_result)  < 1)
-			{
-				Write("\n", 1, si_output);
-				Close(si_result);
-				Signal("m_vn");
-				break;
-			}
-			Write(&c_readFile, 1, si_output);
-			Write(" ", 1, si_output);			
-		}
-		if(SLTD >= 0)
-			PrintString("Write output.txt done (main)\n");
-
-		PrintString("\nRemaining turn(s): ");
-		PrintNum(SLTD);
-		PrintString("\n");	
-		
+		PrintString("ID = ");
+		PrintNum(process[i]);
+		PrintString("\n");
 	}
-	
-	PrintString("Finished! Now close input.txt and output.txt\n");
-	Close(si_input);
-	Close(si_output);
 
-	
-	return 0;	
-	
+	// Signal semaphore voinuoc de cac tien trinh con duoc lap lich chay
+	Signal("voinuoc");
+
+	// Join() cac tien trinh con vao tien trinh cha la "main"
+	for (i = 0; i < SLSV; ++i)
+	{
+		Join(process[i]);
+	}
+
+	Exit(0);
 }

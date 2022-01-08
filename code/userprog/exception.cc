@@ -238,12 +238,12 @@ void ExceptionHandler(ExceptionType which)
 			if (result == 0)
 			{
 				DEBUG(dbgSys, "Close completed.");
-				cerr << "Close completed";
+				//cerr << "Close completed";
 			}
 			else
 			{
 				DEBUG(dbgSys, "Close failed");
-				cerr << "Close failed";
+				//cerr << "Close failed";
 			};
 			kernel->machine->WriteRegister(2, result);
 			ModifyReturnPoint();
@@ -376,6 +376,16 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Seek:
 		{
 			result = SysSeek();
+			kernel->machine->WriteRegister(2, result);
+			ModifyReturnPoint();
+			return;
+			ASSERTNOTREACHED();
+			break;
+		}
+
+		case SC_GetPID:
+		{
+			result = SysGetPID();
 			kernel->machine->WriteRegister(2, result);
 			ModifyReturnPoint();
 			return;

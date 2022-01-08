@@ -54,6 +54,7 @@
 #define SC_CreateSemaphore 55
 #define SC_Wait 56
 #define SC_Signal 57
+#define SC_GetPID 58
 
 #define MaxStringLength 256
 #ifndef IN_ASM
@@ -224,6 +225,8 @@ int CreateSemaphore(char* name, int semval);
 int Wait(char* name);
 
 int Signal(char* name);
+
+int GetPID();
 
 
 

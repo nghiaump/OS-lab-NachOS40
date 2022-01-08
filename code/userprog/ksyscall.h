@@ -618,4 +618,8 @@ int SysSeek(){
 			}
 }
 
+int SysGetPID(){
+  return kernel->currentThread->processID;
+}
+
 #endif /* ! __USERPROG_KSYSCALL_H__ */

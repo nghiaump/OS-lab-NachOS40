@@ -62,14 +62,9 @@ Thread::Thread(char* threadName)
 
 Thread::~Thread()
 {
-    /*
-    DEBUG(dbgThread, "Deleting thread: " << name);
-    printf("this = ");
-    printf(this->getName());
-    printf("currentThread = ");
-    printf(kernel->currentThread->getName());
+    if(strcmp(this->getName(), "main") == 0)
+        return; //cannot delete the main thread
     ASSERT(this != kernel->currentThread);
-    */
     if (stack != NULL)
 	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
 }

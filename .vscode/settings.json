@@ -6,6 +6,7 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "istream": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "memory_resource": "c"
     }
 }

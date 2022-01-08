@@ -1,161 +1,38 @@
 #include "syscall.h"
 #include "copyright.h"
 
+#define WATER_VOLUME 10
+#define COUNT_TO_WAIT 56789
+
 void main()
 {
-	// Khai bao
-	int f_Success; // Bien co dung de kiem tra thanh cong
-	SpaceId si_sinhvien, si_voinuoc;	// Bien id cho file
-	char c_readFile;	// Bien ki tu luu ki tu doc tu file
-	int flag_VN;		// Bien co de nhay den tien trinh voinuoc
-	int flag_MAIN;		// Bien co de nhay den tien trinh main
-	int lengthFile;		// Luu do dai file
-	int i_File;		// Luu con tro file
-	//-----------------------------------------------------------
-	PrintString("Started sinhvien successfully\n");
-	Signal("m_vn");	
+	int si_output, id_SV, i, j, lengthFile;
+	char cID, cSpace;
 
-	while(1)
-	{
-		lengthFile = 0;
-		PrintString("sinhvien is waiting\n");
-		Wait("sinhvien");
-		PrintString("Someone signaled sinhvien\n");
-
-		// Tao file result.txt de ghi voi nao su dung
-		PrintString("Creating result.txt\n");
-		f_Success = CreateFile("result.txt");
-		if(f_Success == -1)
-		{
-			Signal("main"); // tro ve tien trinh chinh
-			return;
-		}
-		//PrintString("Created result.txt successfully\n");
-
-		// Mo file sinhvien.txt len de doc
-		PrintString("Open sinhvien.txt in sinhvien process\n");
-		si_sinhvien = Open("sinhvien.txt", 1);
-		if(si_sinhvien == -1)
-		{
-			Signal("main"); // tro ve tien trinh chinh
-			return;
-		}
-		PrintString("Open sinhvien.txt successfully at address: ");
-		PrintNum(si_sinhvien);
-		PrintString(" (sinhvien)\n");
-		
-		PrintString("Seeking\n");
-		lengthFile = Seek(-1, si_sinhvien);
-		Seek(0, si_sinhvien);
-		i_File = 0;
-		PrintString("Seeked successfully\n");
-
-		
-		// Tao file voinuoc.txt
-		PrintString("Creating voinuoc.txt in sinhvien\n");
-		f_Success = CreateFile("voinuoc.txt");
-		if(f_Success == -1)
-		{
-			Close(si_sinhvien);
-			Signal("main"); // tro ve tien trinh chinh
-			return;
-		}
-		//PrintString("Created voinuoc.txt successfully\n");
-		
-
-		// Mo file voinuoc.txt de ghi tung dung tich nuoc cua sinhvien
-		Wait("m_vn"); //7735
-		PrintString("Opening voinuoc.txt\n");
-		si_voinuoc = Open("voinuoc.txt", 0);
-		if(si_voinuoc == -1)
-		{
-			PrintNum(si_voinuoc);
-			PrintString(" ==> xxxxxxxxxxxxxxxxxFAILED to open voinuoc.txtxxxxxxxxxxxxxxxxxxx\n");
-			Close(si_sinhvien);
-			Signal("main"); // tro ve tien trinh chinh
-			return;
-		}
-
-
-		PrintString("Opened voinuoc.txt successfully at address: ");
-		PrintNum(si_voinuoc);
-
-		// Ghi dung tich vao file voinuoc.txt tu file sinhvien.txt
-		while(i_File < lengthFile)
-		{
-			flag_VN = 0;
-			Read(&c_readFile, 1, si_sinhvien);
-			PrintString("Current char: ");
-			PrintChar(c_readFile);
-			PrintString(" (sinhvien)\n");
-			if(c_readFile != ' ')
-			{
-				Write(&c_readFile, 1, si_voinuoc);
-				
-			}
-			else
-			{
-				flag_VN = 1;
-			}
-
-
-
-			if(i_File == lengthFile - 1)
-			{
-				Write("*", 1, si_voinuoc);
-				flag_VN = 1;
-			}
-			
-			
-			if(flag_VN == 1)
-			{
-				Close(si_voinuoc);
-				PrintString("Closed voinuoc.txt successfully\n");
-
-
-				PrintString("sinhvien signals voinuoc\n");
-				Signal("m_vn"); //7735
-				Signal("voinuoc");
-				
-				
-				// Dung chuong trinh sinhvien lai de voinuoc thuc thi
-				Wait("sinhvien");
-				PrintString("sinhvien has been waken up by voinuoc\n");
-				
-				// Tao file voinuoc.txt
-				Wait("m_vn"); //7735
-				f_Success = CreateFile("voinuoc.txt");
-				if(f_Success == -1)
-				{
-					Close(si_sinhvien);
-					Signal("main"); // tro ve tien trinh chinh
-					return;
-				}
-		
-
-				// Mo file voinuoc.txt de ghi tung dung tich nuoc cua sinhvien
-				si_voinuoc = Open("voinuoc.txt", 0);
-				if(si_voinuoc == -1)
-				{
-					Close(si_sinhvien);
-					Signal("main"); // tro ve tien trinh chinh
-					return;
-				}
-				Signal("m_vn"); //7735
-				
-				
-			}
-			
-			i_File++;							
-		}
-		Close(si_voinuoc);
-		Close(si_sinhvien);
-		PrintString("Now in sinhvien and done 1 line. Then call main to get the next line\n");	
-				
-		// Ket thuc tien trinh sinhvien va voinuoc quay lai ham main
-		
-		Signal("main");	
-	}
-	Exit(0);
 	
+	id_SV = GetPID();				// Su dung syscall GetPID() de lay so thu tu cho sinh vien
+	cID = (char)(id_SV + '0');		// Chuyen int sang char
+	cSpace = ' ';					// Dau cach
+
+	// Vong lap lay lan luot tung lit nuoc
+	for(i = 1; i <= WATER_VOLUME; ++i){
+		Wait("voinuoc");
+
+		for(j = 0; j < COUNT_TO_WAIT; ++j); // Vong lap mo phong thoi gian lay 1 lit nuoc		
+		
+		PrintChar(cID);
+		PrintChar('\n');		
+
+		si_output = Open("output.txt", 0);	// Mo file output.txt ghi so thu tu cua sinh vien hien tai
+
+		lengthFile = Seek(-1, si_output);	// Su dung Seek()
+		Seek(lengthFile, si_output);		// de ghi tiep gia tri vao output.txt
+
+		Write(&cID, 1, si_output);			// Ghi id_SV
+		Write(&cSpace, 1, si_output);		// Ghi khoang trang
+		Close(si_output);
+		Signal("voinuoc");					// Lay xong 1 lit nuoc, toi luot sinh vien khac (hoac van sinh vien nay)
+	}
+
+	Exit(0);								// Ket thuc lay nuoc cua sinh vien id_SV
 }
