@@ -64,6 +64,13 @@ public:
 		openFiles[idx++] = Open("stdin");
 		openFiles[idx++] = Open("stdout");
 	}
+	~FileSystem()
+	{
+		for (int i = 0; i < 10; i++)
+       			if (openFiles[i])
+           			delete openFiles[i];
+		delete[]openFiles;
+	}
 
 	bool Create(char *name)
 	{
