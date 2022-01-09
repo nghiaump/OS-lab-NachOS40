@@ -2,11 +2,11 @@
 #include "copyright.h"
 
 #define WATER_VOLUME 10
-#define COUNT_TO_WAIT 56789
+#define MAX_WAIT 123456
 
 void main()
 {
-	int si_output, id_SV, i, j, lengthFile;
+	int si_output, id_SV, i, j, lengthFile, waitTime;
 	char cID, cSpace;
 
 	
@@ -18,7 +18,9 @@ void main()
 	for(i = 1; i <= WATER_VOLUME; ++i){
 		Wait("voinuoc");
 
-		for(j = 0; j < COUNT_TO_WAIT; ++j); // Vong lap mo phong thoi gian lay 1 lit nuoc		
+		waitTime = RandomNum() % MAX_WAIT; 	// Phat sinh thoi gian cho ngau nhien
+		while(waitTime--); 					// Vong lap mo phong thoi gian lay 1 lit nuoc		
+		
 		
 		PrintChar(cID);
 		PrintChar(' ');		

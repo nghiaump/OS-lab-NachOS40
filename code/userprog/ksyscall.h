@@ -146,7 +146,7 @@ void SysPrintChar()
 // prototype: int RandomNum()
 int SysRandomNum()
 {
-  srand(time(0));
+  srand(time(0) + kernel->stats ->totalTicks);
   return rand();
 }
 
